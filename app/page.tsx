@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { useReactToPrint } from 'react-to-print'
 import jsPDF from 'jspdf'
 import { 
   Download, 
@@ -90,166 +89,167 @@ export default function DLDetailsPage() {
     }
   }
 
-  const handlePrint = useReactToPrint({
-    content: () => printRef.current,
-    documentTitle: 'DL Details - Driving License Information',
-    pageStyle: `
-      @page {
-        size: A4;
-        margin: 0.5in;
+  const handlePrint = () => {
+    // Simple and reliable print function
+    if (printRef.current) {
+      // Create a new window for printing
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        // Get the content to print
+        const printContent = printRef.current.innerHTML;
+        
+        // Create the print document
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>DL Details - Driving License Information</title>
+              <style>
+                @page {
+                  size: A4;
+                  margin: 0.5in;
+                }
+                * {
+                  -webkit-print-color-adjust: exact !important;
+                  color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+                  font-size: 14px;
+                  line-height: 1.4;
+                  background: white;
+                  color: #1f2937;
+                  margin: 0;
+                  padding: 0;
+                }
+                .page-container {
+                  background: white;
+                  padding: 0;
+                  margin: 0;
+                }
+                .main-container {
+                  max-width: none;
+                  margin: 0;
+                  padding: 0;
+                }
+                .header-section {
+                  text-align: center;
+                  margin-bottom: 20px;
+                  padding: 20px;
+                  background: #1e40af;
+                  color: white;
+                }
+                .main-title {
+                  font-size: 24px;
+                  font-weight: bold;
+                  color: white;
+                  margin-bottom: 8px;
+                }
+                .subtitle {
+                  font-size: 12px;
+                  color: #e5e7eb;
+                  margin-bottom: 4px;
+                }
+                .source-url {
+                  font-size: 12px;
+                  color: #93c5fd;
+                  font-weight: 600;
+                }
+                .form-container {
+                  background: white;
+                  border: 1px solid #d1d5db;
+                  margin: 0;
+                  padding: 20px;
+                }
+                .form-table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 13px;
+                }
+                .form-table td {
+                  padding: 10px;
+                  border: 1px solid #d1d5db;
+                  vertical-align: top;
+                }
+                .form-table td:first-child {
+                  background-color: #f8fafc;
+                  font-weight: 600;
+                  width: 35%;
+                  color: #374151;
+                }
+                .form-input {
+                  border: 1px solid #d1d5db;
+                  padding: 6px 8px;
+                  font-size: 12px;
+                  background: white;
+                  color: #1f2937;
+                  width: 100%;
+                  box-sizing: border-box;
+                }
+                .field-label {
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  font-weight: 600;
+                  color: #374151;
+                }
+                .icon {
+                  width: 14px;
+                  height: 14px;
+                  color: #6b7280;
+                }
+                .image-container {
+                  width: 100px;
+                  height: 100px;
+                  border: 2px solid #d1d5db;
+                  background-color: #f9fafb;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  position: relative;
+                }
+                .image-container img {
+                  max-width: 100%;
+                  max-height: 100%;
+                  object-fit: cover;
+                }
+                .upload-placeholder {
+                  text-align: center;
+                  color: #6b7280;
+                  font-size: 10px;
+                }
+                .no-print {
+                  display: none !important;
+                }
+                .button-group {
+                  display: none !important;
+                }
+              </style>
+            </head>
+            <body>
+              ${printContent}
+            </body>
+          </html>
+        `);
+        
+        printWindow.document.close();
+        
+        // Wait for content to load, then print
+        printWindow.onload = () => {
+          printWindow.focus();
+          printWindow.print();
+          printWindow.close();
+        };
+      } else {
+        // Fallback to window.print if popup is blocked
+        window.print();
       }
-      * {
-        -webkit-print-color-adjust: exact !important;
-        color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
-        font-size: 14px !important;
-        line-height: 1.4 !important;
-        background: white !important;
-        color: #1f2937 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      .page-container {
-        background: white !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-      .main-container {
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      .header-section {
-        text-align: center !important;
-        margin-bottom: 20px !important;
-        padding-bottom: 15px !important;
-        border-bottom: 2px solid #e5e7eb !important;
-        background: #1e40af !important;
-        color: white !important;
-        padding: 20px !important;
-        margin: 0 0 20px 0 !important;
-      }
-      .main-title {
-        font-size: 24px !important;
-        font-weight: bold !important;
-        color: white !important;
-        margin-bottom: 8px !important;
-      }
-      .subtitle {
-        font-size: 12px !important;
-        color: #e5e7eb !important;
-        margin-bottom: 4px !important;
-      }
-      .source-url {
-        font-size: 12px !important;
-        color: #93c5fd !important;
-        font-weight: 600 !important;
-      }
-      .form-container {
-        background: white !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        border: 1px solid #d1d5db !important;
-        margin: 0 !important;
-        padding: 20px !important;
-        max-width: none !important;
-      }
-      .form-table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        font-size: 13px !important;
-        margin-top: 0 !important;
-      }
-      .form-table td {
-        padding: 10px !important;
-        border: 1px solid #d1d5db !important;
-        vertical-align: top !important;
-      }
-      .form-table td:first-child {
-        background-color: #f8fafc !important;
-        font-weight: 600 !important;
-        width: 35% !important;
-        color: #374151 !important;
-      }
-      .form-input {
-        border: 1px solid #d1d5db !important;
-        border-radius: 4px !important;
-        padding: 6px 8px !important;
-        font-size: 12px !important;
-        background: white !important;
-        color: #1f2937 !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-      }
-      .field-label {
-        display: flex !important;
-        align-items: center !important;
-        gap: 6px !important;
-        font-weight: 600 !important;
-        color: #374151 !important;
-      }
-      .icon {
-        width: 14px !important;
-        height: 14px !important;
-        color: #6b7280 !important;
-      }
-      .image-container {
-        width: 100px !important;
-        height: 100px !important;
-        border: 2px solid #d1d5db !important;
-        border-radius: 4px !important;
-        background-color: #f9fafb !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        position: relative !important;
-      }
-      .image-container img {
-        max-width: 100% !important;
-        max-height: 100% !important;
-        object-fit: cover !important;
-        border-radius: 2px !important;
-      }
-      .upload-placeholder {
-        text-align: center !important;
-        color: #6b7280 !important;
-        font-size: 10px !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .button-group {
-        display: none !important;
-      }
-    `,
-    onBeforeGetContent: () => {
-      // Ensure images are loaded before printing
-      const images = printRef.current?.querySelectorAll('img');
-      if (images) {
-        return Promise.all(
-          Array.from(images).map((img) => {
-            if (img.complete) return Promise.resolve();
-            return new Promise((resolve) => {
-              img.onload = resolve;
-              img.onerror = resolve;
-            });
-          })
-        );
-      }
-      return Promise.resolve();
-    },
-    onAfterPrint: () => {
-      console.log('Print completed successfully');
-    },
-    onPrintError: (error) => {
-      console.error('Print error:', error);
-      // Fallback to window.print if React print fails
+    } else {
+      // Fallback to window.print if printRef is not available
       window.print();
     }
-  })
+  }
 
   const exportToPDF = () => {
     const pdf = new jsPDF('p', 'mm', 'a4')
