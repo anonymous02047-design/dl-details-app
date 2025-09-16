@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DL Details - Simple Version</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="main-container">
+            <div class="header-section">
+                <h1 class="main-title">DL Details</h1>
+                <p class="subtitle">Please check response is coming from</p>
+                <p class="source-url">https://sarathi.parivahan.gov.in/...</p>
+            </div>
+            
+            <div class="form-container print-container">
+                <table class="form-table">
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Candidate Image:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <div class="image-container" onclick="document.getElementById('candidate-image').click()">
+                                <div class="upload-placeholder" id="image-placeholder">
+                                    <span class="upload-text">Upload Image</span>
+                                </div>
+                                <img id="candidate-image-preview" style="display: none; max-width: 100%; max-height: 100%; object-fit: cover; border-radius: 4px;" />
+                                <input type="file" id="candidate-image" accept="image/*" class="file-input" onchange="handleImageUpload('candidate-image', this)" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Candidate Signature:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <div class="image-container" onclick="document.getElementById('candidate-signature').click()">
+                                <div class="upload-placeholder" id="signature-placeholder">
+                                    <span class="upload-text">Upload Signature</span>
+                                </div>
+                                <img id="candidate-signature-preview" style="display: none; max-width: 100%; max-height: 100%; object-fit: cover; border-radius: 4px;" />
+                                <input type="file" id="candidate-signature" accept="image/*" class="file-input" onchange="handleImageUpload('candidate-signature', this)" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>DL No.:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-input" placeholder="Enter DL Number" id="dl-number" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>D.O.B:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="date" class="form-input" id="dob" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Name:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-input" placeholder="Enter Full Name" id="name" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>S/W/D:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-input" placeholder="Son/Wife/Daughter of" id="father-husband" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Blood Group:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <select class="form-input" id="blood-group">
+                                <option value="">Select Blood Group</option>
+                                <option value="A+">A+ (A Positive)</option>
+                                <option value="A-">A- (A Negative)</option>
+                                <option value="B+">B+ (B Positive)</option>
+                                <option value="B-">B- (B Negative)</option>
+                                <option value="AB+">AB+ (AB Positive)</option>
+                                <option value="AB-">AB- (AB Negative)</option>
+                                <option value="O+">O+ (O Positive)</option>
+                                <option value="O-">O- (O Negative)</option>
+                                <option value="A1+">A1+ (A1 Positive)</option>
+                                <option value="A1-">A1- (A1 Negative)</option>
+                                <option value="A2+">A2+ (A2 Positive)</option>
+                                <option value="A2-">A2- (A2 Negative)</option>
+                                <option value="B1+">B1+ (B1 Positive)</option>
+                                <option value="B1-">B1- (B1 Negative)</option>
+                                <option value="B2+">B2+ (B2 Positive)</option>
+                                <option value="B2-">B2- (B2 Negative)</option>
+                                <option value="A1B+">A1B+ (A1B Positive)</option>
+                                <option value="A1B-">A1B- (A1B Negative)</option>
+                                <option value="A2B+">A2B+ (A2B Positive)</option>
+                                <option value="A2B-">A2B- (A2B Negative)</option>
+                                <option value="Bombay">Bombay (Oh)</option>
+                                <option value="Rh-null">Rh-null (Golden Blood)</option>
+                                <option value="Unknown">Unknown</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Nationality:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-input" placeholder="Enter Nationality" id="nationality" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Permanent Address:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <textarea class="form-input" rows="3" placeholder="Enter Permanent Address" id="permanent-address"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Temporary Address:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <textarea class="form-input" rows="3" placeholder="Enter Temporary Address" id="temporary-address"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>COV:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-input" placeholder="Class of Vehicle" id="cov" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Issue Date:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="date" class="form-input" id="issue-date" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Gender:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <select class="form-input" id="gender">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Organ Donor:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <select class="form-input" id="organ-donor">
+                                <option value="">Select</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Badge No:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-input" placeholder="Enter Badge Number" id="badge-no" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Badge Issue Date:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="date" class="form-input" id="badge-issue-date" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>NT Validity:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="date" class="form-input" id="nt-validity" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>TR Validity:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="date" class="form-input" id="tr-validity" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Last Endorse Auth:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-input" placeholder="Enter Last Endorse Authority" id="last-endorse-auth" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="field-label">
+                                <b>Mobile Number:</b>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="tel" class="form-input" placeholder="Enter Mobile Number" id="mobile-number" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="button-group no-print">
+                <button class="btn btn-primary" onclick="previewForm()">Preview</button>
+                <button class="btn btn-secondary" onclick="printForm()">Print</button>
+                <button class="btn btn-success" onclick="exportToPDF()">Export PDF</button>
+                <button class="btn btn-warning" onclick="exportToCSV()">Export CSV</button>
+                <button class="btn btn-danger" onclick="clearForm()">Clear Form</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Image upload functionality
+        function handleImageUpload(type, input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById(type + '-preview');
+                    const placeholder = document.getElementById(type.replace('candidate-', '') + '-placeholder');
+                    
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Form functions
+        function previewForm() {
+            alert('Preview functionality - Form data collected successfully!');
+        }
+        
+        function printForm() {
+            window.print();
+        }
+        
+        function exportToPDF() {
+            alert('PDF Export functionality - This would generate a PDF with the form data!');
+        }
+        
+        function exportToCSV() {
+            const formData = collectFormData();
+            const csv = convertToCSV(formData);
+            downloadCSV(csv, 'dl-details.csv');
+        }
+        
+        function clearForm() {
+            if (confirm('Are you sure you want to clear all form data?')) {
+                document.querySelectorAll('.form-input').forEach(input => {
+                    if (input.type === 'file') {
+                        input.value = '';
+                    } else {
+                        input.value = '';
+                    }
+                });
+                
+                // Reset image previews
+                document.getElementById('candidate-image-preview').style.display = 'none';
+                document.getElementById('candidate-signature-preview').style.display = 'none';
+                document.getElementById('image-placeholder').style.display = 'flex';
+                document.getElementById('signature-placeholder').style.display = 'flex';
+            }
+        }
+        
+        function collectFormData() {
+            return {
+                dlNumber: document.getElementById('dl-number').value,
+                dob: document.getElementById('dob').value,
+                name: document.getElementById('name').value,
+                fatherHusbandName: document.getElementById('father-husband').value,
+                bloodGroup: document.getElementById('blood-group').value,
+                nationality: document.getElementById('nationality').value,
+                permanentAddress: document.getElementById('permanent-address').value,
+                temporaryAddress: document.getElementById('temporary-address').value,
+                cov: document.getElementById('cov').value,
+                issueDate: document.getElementById('issue-date').value,
+                gender: document.getElementById('gender').value,
+                organDonor: document.getElementById('organ-donor').value,
+                badgeNo: document.getElementById('badge-no').value,
+                badgeIssueDate: document.getElementById('badge-issue-date').value,
+                ntValidity: document.getElementById('nt-validity').value,
+                trValidity: document.getElementById('tr-validity').value,
+                lastEndorseAuth: document.getElementById('last-endorse-auth').value,
+                mobileNumber: document.getElementById('mobile-number').value
+            };
+        }
+        
+        function convertToCSV(data) {
+            const headers = Object.keys(data);
+            const values = Object.values(data);
+            return [headers.join(','), values.join(',')].join('\n');
+        }
+        
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
