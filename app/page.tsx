@@ -92,58 +92,150 @@ export default function DLDetailsPage() {
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    documentTitle: 'DL Details',
+    documentTitle: 'DL Details - Driving License Information',
     pageStyle: `
       @page {
         size: A4;
-        margin: 1cm;
+        margin: 0.5in;
+      }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
       }
       body {
-        font-family: Arial, sans-serif;
-        font-size: 12px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+        font-size: 14px !important;
+        line-height: 1.4 !important;
         background: white !important;
-        color: black !important;
+        color: #1f2937 !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
-      .print-container {
-        width: 100%;
-        background: white;
+      .page-container {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .main-container {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .header-section {
+        text-align: center !important;
+        margin-bottom: 20px !important;
+        padding-bottom: 15px !important;
+        border-bottom: 2px solid #e5e7eb !important;
+      }
+      .main-title {
+        font-size: 24px !important;
+        font-weight: bold !important;
+        color: #1e40af !important;
+        margin-bottom: 8px !important;
+      }
+      .subtitle {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        margin-bottom: 4px !important;
+      }
+      .source-url {
+        font-size: 12px !important;
+        color: #2563eb !important;
+        font-weight: 600 !important;
+      }
+      .form-container {
+        background: white !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: 1px solid #d1d5db !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        max-width: none !important;
       }
       .form-table {
-        width: 100%;
-        border-collapse: collapse;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 13px !important;
+        margin-top: 0 !important;
       }
       .form-table td {
-        padding: 8px;
-        border: 1px solid #000;
-        vertical-align: top;
+        padding: 10px !important;
+        border: 1px solid #d1d5db !important;
+        vertical-align: top !important;
       }
       .form-table td:first-child {
-        background-color: #f0f0f0;
-        font-weight: bold;
-        width: 30%;
+        background-color: #f8fafc !important;
+        font-weight: 600 !important;
+        width: 35% !important;
+        color: #374151 !important;
+      }
+      .form-input {
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px !important;
+        padding: 6px 8px !important;
+        font-size: 12px !important;
+        background: white !important;
+        color: #1f2937 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .field-label {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+      }
+      .icon {
+        width: 14px !important;
+        height: 14px !important;
+        color: #6b7280 !important;
       }
       .image-container {
-        width: 100px;
-        height: 100px;
-        border: 1px solid #000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: white;
+        width: 100px !important;
+        height: 100px !important;
+        border: 2px solid #d1d5db !important;
+        border-radius: 4px !important;
+        background-color: #f9fafb !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
       }
       .image-container img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: cover;
-        border: none;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: cover !important;
+        border-radius: 2px !important;
       }
       .upload-placeholder {
-        display: none;
+        text-align: center !important;
+        color: #6b7280 !important;
+        font-size: 10px !important;
       }
       .no-print {
         display: none !important;
       }
-    `
+      .button-group {
+        display: none !important;
+      }
+    `,
+    onBeforeGetContent: () => {
+      // Ensure images are loaded before printing
+      const images = printRef.current?.querySelectorAll('img');
+      if (images) {
+        return Promise.all(
+          Array.from(images).map((img) => {
+            if (img.complete) return Promise.resolve();
+            return new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          })
+        );
+      }
+      return Promise.resolve();
+    }
   })
 
   const exportToPDF = () => {
@@ -308,7 +400,7 @@ export default function DLDetailsPage() {
     pdf.text('DL Details Form - Automated System', pageWidth - 20, footerY, { align: 'right' })
     
     // Save the PDF
-    pdf.save('DL-Details.pdf')
+    pdf.save('dl-details.pdf')
   }
 
   const exportToCSV = () => {
@@ -843,6 +935,10 @@ export default function DLDetailsPage() {
           <button onClick={handlePrint} className="btn btn-secondary">
             <Printer className="btn-icon" />
             Print
+          </button>
+          <button onClick={() => window.print()} className="btn btn-secondary" style={{marginLeft: '10px'}}>
+            <Printer className="btn-icon" />
+            Print (Fallback)
           </button>
           <button onClick={handleExportPDF} className="btn btn-success">
             <Download className="btn-icon" />
