@@ -14,7 +14,11 @@ import {
   CreditCard,
   Heart,
   Shield,
-  Car
+  Car,
+  Users,
+  Globe,
+  Award,
+  Clock
 } from 'lucide-react'
 
 interface DLFormData {
@@ -90,7 +94,12 @@ export default function DLDetailsPage() {
   }
 
   const handlePrint = () => {
-    // Simple and reliable print function
+    // Simple and reliable print function - same as fallback
+    window.print();
+  }
+
+  const handlePrintComplex = () => {
+    // Complex print function for reference
     if (printRef.current) {
       // Create a new window for printing
       const printWindow = window.open('', '_blank');
@@ -571,7 +580,12 @@ export default function DLDetailsPage() {
   }
 
   const handlePrintFromPreview = () => {
-    // Print the preview content directly
+    // Simple and reliable print function - same as fallback
+    window.print();
+  }
+
+  const handlePrintFromPreviewComplex = () => {
+    // Complex print function for reference
     const previewContent = document.querySelector('.preview-document')
     if (previewContent) {
       const printWindow = window.open('', '_blank')
@@ -1169,10 +1183,6 @@ export default function DLDetailsPage() {
             <Printer className="btn-icon" />
             Print
           </button>
-          <button onClick={() => window.print()} className="btn btn-secondary" style={{marginLeft: '10px'}}>
-            <Printer className="btn-icon" />
-            Print (Fallback)
-          </button>
           <button onClick={handleExportPDF} className="btn btn-success">
             <Download className="btn-icon" />
             Export PDF
@@ -1198,133 +1208,266 @@ export default function DLDetailsPage() {
             
             <div className="preview-content">
               <div className="preview-document">
-                {/* Header */}
-                <div className="preview-header-section">
-                  <div className="preview-title">DL Details</div>
-                  <div className="preview-subtitle">Please check response is coming from</div>
-                  <div className="preview-source">https://sarathi.parivahan.gov.in/...</div>
+                {/* Header - Match main page exactly */}
+                <div className="header-section">
+                  <h1 className="main-title">DL Details</h1>
+                  <p className="subtitle">Please check response is coming from</p>
+                  <p className="source-url">https://sarathi.parivahan.gov.in/...</p>
                 </div>
 
-                {/* Photo and Signature Section */}
-                <div className="preview-images-section">
-                  <div className="preview-image-container">
-                    <div className="preview-image-label">Candidate Image:</div>
-                    <div className="preview-photo">
-                      {formData.candidateImage ? (
-                        <img 
-                          src={formData.candidateImage} 
-                          alt="Candidate" 
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                            if (nextElement) {
-                              nextElement.style.display = 'flex';
-                            }
-                          }}
-                        />
-                      ) : null}
-                      <div className="preview-placeholder" style={{ display: formData.candidateImage ? 'none' : 'flex' }}>
-                        Photo
-                      </div>
-                    </div>
-                  </div>
-                  <div className="preview-signature-container">
-                    <div className="preview-signature-label">Candidate Signature:</div>
-                    <div className="preview-signature">
-                      {formData.candidateSignature ? (
-                        <img 
-                          src={formData.candidateSignature} 
-                          alt="Signature" 
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                            if (nextElement) {
-                              nextElement.style.display = 'flex';
-                            }
-                          }}
-                        />
-                      ) : null}
-                      <div className="preview-placeholder" style={{ display: formData.candidateSignature ? 'none' : 'flex' }}>
-                        Signature
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {/* Form Container - Match main page exactly */}
+                <div className="form-container">
+                  {/* Photo and Signature Section - Match main page exactly */}
+                  <table className="form-table">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <User className="icon" />
+                            Candidate Image:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="image-container">
+                            {formData.candidateImage ? (
+                              <img 
+                                src={formData.candidateImage} 
+                                alt="Candidate" 
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                                  if (nextElement) {
+                                    nextElement.style.display = 'flex';
+                                  }
+                                }}
+                              />
+                            ) : null}
+                            <div className="upload-placeholder" style={{ display: formData.candidateImage ? 'none' : 'flex' }}>
+                              <Upload className="icon" />
+                              <span>Upload Image</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="field-label">
+                            <FileText className="icon" />
+                            Candidate Signature:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="image-container">
+                            {formData.candidateSignature ? (
+                              <img 
+                                src={formData.candidateSignature} 
+                                alt="Signature" 
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                                  if (nextElement) {
+                                    nextElement.style.display = 'flex';
+                                  }
+                                }}
+                              />
+                            ) : null}
+                            <div className="upload-placeholder" style={{ display: formData.candidateSignature ? 'none' : 'flex' }}>
+                              <Upload className="icon" />
+                              <span>Upload Signature</span>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-                {/* Form Data */}
-                <div className="preview-form-data">
-                  <div className="preview-row">
-                    <div className="preview-label">DL No.:</div>
-                    <div className="preview-value">{formData.dlNumber || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">D.O.B:</div>
-                    <div className="preview-value">{formData.dob || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Name:</div>
-                    <div className="preview-value">{formData.name || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">S/W/D:</div>
-                    <div className="preview-value">{formData.fatherHusbandName || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Blood Group:</div>
-                    <div className="preview-value">{formData.bloodGroup || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Nationality:</div>
-                    <div className="preview-value">{formData.nationality || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Permanent Address:</div>
-                    <div className="preview-value">{formData.permanentAddress || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Temporary Address:</div>
-                    <div className="preview-value">{formData.temporaryAddress || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">COV:</div>
-                    <div className="preview-value">{formData.cov || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Issue Date:</div>
-                    <div className="preview-value">{formData.issueDate || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Gender:</div>
-                    <div className="preview-value">{formData.gender || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Organ Donor:</div>
-                    <div className="preview-value">{formData.organDonor || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Badge No:</div>
-                    <div className="preview-value">{formData.badgeNo || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Badge Issue Date:</div>
-                    <div className="preview-value">{formData.badgeIssueDate || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">NT Validity:</div>
-                    <div className="preview-value">{formData.ntValidity || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">TR Validity:</div>
-                    <div className="preview-value">{formData.trValidity || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Last Endorse Auth:</div>
-                    <div className="preview-value">{formData.lastEndorseAuth || 'Not provided'}</div>
-                  </div>
-                  <div className="preview-row">
-                    <div className="preview-label">Mobile Number:</div>
-                    <div className="preview-value">{formData.mobileNumber || 'Not provided'}</div>
-                  </div>
+                  {/* DL Details Table - Match main page exactly */}
+                  <table className="form-table">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <FileText className="icon" />
+                            DL No.:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.dlNumber || 'Not provided'}</div>
+                        </td>
+                        <td>
+                          <div className="field-label">
+                            <Calendar className="icon" />
+                            D.O.B:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.dob || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <User className="icon" />
+                            Name:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.name || 'Not provided'}</div>
+                        </td>
+                        <td>
+                          <div className="field-label">
+                            <Users className="icon" />
+                            S/W/D:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.fatherHusbandName || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <Heart className="icon" />
+                            Blood Group:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.bloodGroup || 'Not provided'}</div>
+                        </td>
+                        <td>
+                          <div className="field-label">
+                            <Globe className="icon" />
+                            Nationality:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.nationality || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <MapPin className="icon" />
+                            Permanent Address:
+                          </div>
+                        </td>
+                        <td colSpan={3}>
+                          <div className="form-input">{formData.permanentAddress || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <MapPin className="icon" />
+                            Temporary Address:
+                          </div>
+                        </td>
+                        <td colSpan={3}>
+                          <div className="form-input">{formData.temporaryAddress || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <Car className="icon" />
+                            COV:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.cov || 'Not provided'}</div>
+                        </td>
+                        <td>
+                          <div className="field-label">
+                            <Calendar className="icon" />
+                            Issue Date:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.issueDate || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <User className="icon" />
+                            Gender:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.gender || 'Not provided'}</div>
+                        </td>
+                        <td>
+                          <div className="field-label">
+                            <Heart className="icon" />
+                            Organ Donor:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.organDonor || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <Award className="icon" />
+                            Badge No:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.badgeNo || 'Not provided'}</div>
+                        </td>
+                        <td>
+                          <div className="field-label">
+                            <Calendar className="icon" />
+                            Badge Issue Date:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.badgeIssueDate || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <Clock className="icon" />
+                            NT Validity:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.ntValidity || 'Not provided'}</div>
+                        </td>
+                        <td>
+                          <div className="field-label">
+                            <Clock className="icon" />
+                            TR Validity:
+                          </div>
+                        </td>
+                        <td>
+                          <div className="form-input">{formData.trValidity || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <Shield className="icon" />
+                            Last Endorse Auth:
+                          </div>
+                        </td>
+                        <td colSpan={3}>
+                          <div className="form-input">{formData.lastEndorseAuth || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div className="field-label">
+                            <Phone className="icon" />
+                            Mobile Number:
+                          </div>
+                        </td>
+                        <td colSpan={3}>
+                          <div className="form-input">{formData.mobileNumber || 'Not provided'}</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
