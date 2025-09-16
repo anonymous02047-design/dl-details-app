@@ -13,11 +13,11 @@ if %errorlevel% neq 0 (
 
 echo.
 echo Step 2: Creating .nojekyll file...
-echo. > dist\.nojekyll
+echo. > out\.nojekyll
 
 echo.
 echo Step 3: Adding files to Git...
-git add dist
+git add out
 
 echo.
 echo Step 4: Committing build...
@@ -25,7 +25,7 @@ git commit -m "Deploy to GitHub Pages - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
 
 echo.
 echo Step 5: Pushing to gh-pages branch...
-git subtree push --prefix dist origin gh-pages
+git subtree push --prefix out origin gh-pages
 
 echo.
 echo ✅ Deployment complete!
