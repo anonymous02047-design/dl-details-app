@@ -1,0 +1,988 @@
+'use client'
+
+import { useState, useRef } from 'react'
+import { useReactToPrint } from 'react-to-print'
+import jsPDF from 'jspdf'
+import { 
+  Download, 
+  Printer, 
+  FileText, 
+  Upload, 
+  User, 
+  Calendar,
+  MapPin,
+  Phone,
+  CreditCard,
+  Heart,
+  Shield,
+  Car
+} from 'lucide-react'
+
+interface DLFormData {
+  dlNumber: string
+  dob: string
+  name: string
+  fatherHusbandName: string
+  bloodGroup: string
+  nationality: string
+  permanentAddress: string
+  temporaryAddress: string
+  cov: string
+  issueDate: string
+  gender: string
+  organDonor: string
+  badgeNo: string
+  badgeIssueDate: string
+  ntValidity: string
+  trValidity: string
+  lastEndorseAuth: string
+  mobileNumber: string
+  candidateImage: string | null
+  candidateSignature: string | null
+}
+
+export default function DLDetailsPage() {
+  const [formData, setFormData] = useState<DLFormData>({
+    dlNumber: '',
+    dob: '',
+    name: '',
+    fatherHusbandName: '',
+    bloodGroup: '',
+    nationality: '',
+    permanentAddress: '',
+    temporaryAddress: '',
+    cov: '',
+    issueDate: '',
+    gender: '',
+    organDonor: '',
+    badgeNo: '',
+    badgeIssueDate: '',
+    ntValidity: '',
+    trValidity: '',
+    lastEndorseAuth: '',
+    mobileNumber: '',
+    candidateImage: null,
+    candidateSignature: null
+  })
+
+  const [showPreview, setShowPreview] = useState(false)
+
+  const printRef = useRef<HTMLDivElement>(null)
+
+  const handleInputChange = (field: keyof DLFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
+  const handleImageUpload = (field: 'candidateImage' | 'candidateSignature', event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setFormData(prev => ({
+          ...prev,
+          [field]: e.target?.result as string
+        }))
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: 'DL Details',
+    pageStyle: `
+      @page {
+        size: A4;
+        margin: 1cm;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        background: white !important;
+        color: black !important;
+      }
+      .print-container {
+        width: 100%;
+        background: white;
+      }
+      .form-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .form-table td {
+        padding: 8px;
+        border: 1px solid #000;
+        vertical-align: top;
+      }
+      .form-table td:first-child {
+        background-color: #f0f0f0;
+        font-weight: bold;
+        width: 30%;
+      }
+      .image-container {
+        width: 100px;
+        height: 100px;
+        border: 1px solid #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+      }
+      .image-container img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+        border: none;
+      }
+      .upload-placeholder {
+        display: none;
+      }
+      .no-print {
+        display: none !important;
+      }
+    `
+  })
+
+  const exportToPDF = () => {
+    const pdf = new jsPDF('p', 'mm', 'a4')
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    
+    // Set up colors
+    const primaryColor = [0, 51, 102] // Dark blue
+    const secondaryColor = [0, 102, 204] // Blue
+    const lightGray = [240, 240, 240]
+    
+    // Header Section
+    pdf.setFillColor(...primaryColor)
+    pdf.rect(0, 0, pageWidth, 25, 'F')
+    
+    pdf.setTextColor(255, 255, 255)
+    pdf.setFontSize(20)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('DRIVING LICENSE', pageWidth / 2, 15, { align: 'center' })
+    
+    // Subtitle
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text('Please check response is coming from', pageWidth / 2, 22, { align: 'center' })
+    pdf.text('https://sarathi.parivahan.gov.in/...', pageWidth / 2, 26, { align: 'center' })
+    
+    // Reset text color
+    pdf.setTextColor(0, 0, 0)
+    
+    // Photo and Signature Section
+    let yPos = 40
+    
+    // Photo section
+    if (formData.candidateImage) {
+      try {
+        const img = new Image()
+        img.onload = () => {
+          const imgWidth = 30
+          const imgHeight = 35
+          pdf.addImage(img, 'JPEG', 20, yPos, imgWidth, imgHeight)
+        }
+        img.src = formData.candidateImage
+      } catch (e) {
+        // If image fails to load, draw a placeholder
+        pdf.setFillColor(...lightGray)
+        pdf.rect(20, yPos, 30, 35, 'F')
+        pdf.setFontSize(8)
+        pdf.text('Photo', 35, yPos + 20, { align: 'center' })
+      }
+    } else {
+      pdf.setFillColor(...lightGray)
+      pdf.rect(20, yPos, 30, 35, 'F')
+      pdf.setFontSize(8)
+      pdf.text('Photo', 35, yPos + 20, { align: 'center' })
+    }
+    
+    // Signature section
+    if (formData.candidateSignature) {
+      try {
+        const img = new Image()
+        img.onload = () => {
+          const imgWidth = 30
+          const imgHeight = 15
+          pdf.addImage(img, 'JPEG', pageWidth - 50, yPos, imgWidth, imgHeight)
+        }
+        img.src = formData.candidateSignature
+      } catch (e) {
+        pdf.setFillColor(...lightGray)
+        pdf.rect(pageWidth - 50, yPos, 30, 15, 'F')
+        pdf.setFontSize(8)
+        pdf.text('Signature', pageWidth - 35, yPos + 8, { align: 'center' })
+      }
+    } else {
+      pdf.setFillColor(...lightGray)
+      pdf.rect(pageWidth - 50, yPos, 30, 15, 'F')
+      pdf.setFontSize(8)
+      pdf.text('Signature', pageWidth - 35, yPos + 8, { align: 'center' })
+    }
+    
+    // Main content area
+    yPos = 85
+    
+    // Create a table-like structure
+    const fields = [
+      { label: 'DL No.', value: formData.dlNumber, width: 0.5 },
+      { label: 'D.O.B', value: formData.dob, width: 0.5 },
+      { label: 'Name', value: formData.name, width: 1 },
+      { label: 'S/W/D', value: formData.fatherHusbandName, width: 1 },
+      { label: 'Blood Group', value: formData.bloodGroup, width: 0.3 },
+      { label: 'Nationality', value: formData.nationality, width: 0.7 },
+      { label: 'Permanent Address', value: formData.permanentAddress, width: 1 },
+      { label: 'Temporary Address', value: formData.temporaryAddress, width: 1 },
+      { label: 'COV', value: formData.cov, width: 0.5 },
+      { label: 'Issue Date', value: formData.issueDate, width: 0.5 },
+      { label: 'Gender', value: formData.gender, width: 0.3 },
+      { label: 'Organ Donor', value: formData.organDonor, width: 0.7 },
+      { label: 'Badge No', value: formData.badgeNo, width: 0.5 },
+      { label: 'Badge Issue Date', value: formData.badgeIssueDate, width: 0.5 },
+      { label: 'NT Validity', value: formData.ntValidity, width: 0.5 },
+      { label: 'TR Validity', value: formData.trValidity, width: 0.5 },
+      { label: 'Last Endorse Auth', value: formData.lastEndorseAuth, width: 1 },
+      { label: 'Mobile Number', value: formData.mobileNumber, width: 0.5 }
+    ]
+    
+    // Draw table headers and content
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'bold')
+    
+    let currentY = yPos
+    let currentX = 20
+    const rowHeight = 8
+    const colWidth = (pageWidth - 40) / 2
+    
+    fields.forEach((field, index) => {
+      if (field.value) {
+        // Draw background for label
+        pdf.setFillColor(...lightGray)
+        pdf.rect(currentX, currentY, colWidth * 0.4, rowHeight, 'F')
+        
+        // Draw label
+        pdf.setTextColor(0, 0, 0)
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(9)
+        pdf.text(field.label + ':', currentX + 2, currentY + 5)
+        
+        // Draw value
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(9)
+        const valueX = currentX + colWidth * 0.4 + 2
+        const maxWidth = colWidth * 0.6 - 4
+        
+        // Handle long text by wrapping
+        const lines = pdf.splitTextToSize(field.value, maxWidth)
+        pdf.text(lines, valueX, currentY + 5)
+        
+        // Move to next row
+        currentY += rowHeight + 2
+        
+        // Check if we need to move to next column or new page
+        if (currentY > pageHeight - 30) {
+          if (currentX === 20) {
+            // Move to right column
+            currentX = pageWidth / 2 + 10
+            currentY = yPos
+          } else {
+            // New page
+            pdf.addPage()
+            currentX = 20
+            currentY = 30
+          }
+        }
+      }
+    })
+    
+    // Footer
+    const footerY = pageHeight - 15
+    pdf.setFontSize(8)
+    pdf.setFont('helvetica', 'italic')
+    pdf.setTextColor(100, 100, 100)
+    pdf.text('Generated on: ' + new Date().toLocaleDateString(), 20, footerY)
+    pdf.text('DL Details Form - Automated System', pageWidth - 20, footerY, { align: 'right' })
+    
+    // Save the PDF
+    pdf.save('DL-Details.pdf')
+  }
+
+  const exportToCSV = () => {
+    const csvContent = [
+      ['Field', 'Value'],
+      ['DL No.', formData.dlNumber],
+      ['D.O.B', formData.dob],
+      ['Name', formData.name],
+      ['S/W/D', formData.fatherHusbandName],
+      ['Blood Group', formData.bloodGroup],
+      ['Nationality', formData.nationality],
+      ['Permanent Address', formData.permanentAddress],
+      ['Temporary Address', formData.temporaryAddress],
+      ['COV', formData.cov],
+      ['Issue Date', formData.issueDate],
+      ['Gender', formData.gender],
+      ['Organ Donor', formData.organDonor],
+      ['Badge No', formData.badgeNo],
+      ['Badge Issue Date', formData.badgeIssueDate],
+      ['NT Validity', formData.ntValidity],
+      ['TR Validity', formData.trValidity],
+      ['Last Endorse Auth', formData.lastEndorseAuth],
+      ['Mobile Number', formData.mobileNumber]
+    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'dl-details.csv'
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const clearForm = () => {
+    if (window.confirm('Are you sure you want to clear all form data?')) {
+      setFormData({
+        dlNumber: '',
+        dob: '',
+        name: '',
+        fatherHusbandName: '',
+        bloodGroup: '',
+        nationality: '',
+        permanentAddress: '',
+        temporaryAddress: '',
+        cov: '',
+        issueDate: '',
+        gender: '',
+        organDonor: '',
+        badgeNo: '',
+        badgeIssueDate: '',
+        ntValidity: '',
+        trValidity: '',
+        lastEndorseAuth: '',
+        mobileNumber: '',
+        candidateImage: null,
+        candidateSignature: null
+      })
+    }
+  }
+
+  const validateForm = () => {
+    const requiredFields = ['dlNumber', 'name', 'dob', 'fatherHusbandName', 'nationality']
+    const missingFields = requiredFields.filter(field => !formData[field as keyof DLFormData])
+    
+    if (missingFields.length > 0) {
+      alert(`Please fill in the following required fields: ${missingFields.join(', ')}`)
+      return false
+    }
+    return true
+  }
+
+  const handleExportPDF = () => {
+    if (validateForm()) {
+      exportToPDF()
+    }
+  }
+
+  const handleExportCSV = () => {
+    if (validateForm()) {
+      exportToCSV()
+    }
+  }
+
+  const handlePreview = () => {
+    if (validateForm()) {
+      setShowPreview(true)
+    }
+  }
+
+  const closePreview = () => {
+    setShowPreview(false)
+  }
+
+  const handlePrintFromPreview = () => {
+    setShowPreview(false)
+    setTimeout(() => {
+      handlePrint()
+    }, 100)
+  }
+
+  const handleExportPDFFromPreview = () => {
+    setShowPreview(false)
+    setTimeout(() => {
+      exportToPDF()
+    }, 100)
+  }
+
+
+  return (
+    <div className="page-container">
+      <div className="main-container">
+        <div className="header-section">
+          <h1 className="main-title">DL Details</h1>
+          <p className="subtitle">Please check response is coming from</p>
+          <p className="source-url">https://sarathi.parivahan.gov.in/...</p>
+        </div>
+
+
+        <div className="form-container print-container" ref={printRef}>
+          <table className="form-table">
+            <tbody>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <User className="icon" />
+                    <b>Candidate Image:</b>
+                  </label>
+                </td>
+                <td>
+                  <div className="image-container">
+                    {formData.candidateImage ? (
+                      <img 
+                        src={formData.candidateImage} 
+                        alt="Candidate" 
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="upload-placeholder" style={{ display: formData.candidateImage ? 'none' : 'flex' }}>
+                      <Upload className="upload-icon" />
+                      <span className="upload-text">Upload Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload('candidateImage', e)}
+                      className="file-input"
+                    />
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <FileText className="icon" />
+                    <b>Candidate Signature:</b>
+                  </label>
+                </td>
+                <td>
+                  <div className="image-container">
+                    {formData.candidateSignature ? (
+                      <img 
+                        src={formData.candidateSignature} 
+                        alt="Signature" 
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="upload-placeholder" style={{ display: formData.candidateSignature ? 'none' : 'flex' }}>
+                      <Upload className="upload-icon" />
+                      <span className="upload-text">Upload Signature</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload('candidateSignature', e)}
+                      className="file-input"
+                    />
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <CreditCard className="icon" />
+                    <b>DL No.:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={formData.dlNumber}
+                    onChange={(e) => handleInputChange('dlNumber', e.target.value)}
+                    placeholder="Enter DL Number"
+                    required
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Calendar className="icon" />
+                    <b>D.O.B:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={formData.dob}
+                    onChange={(e) => handleInputChange('dob', e.target.value)}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <User className="icon" />
+                    <b>Name:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    placeholder="Enter Full Name"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <User className="icon" />
+                    <b>S/W/D:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={formData.fatherHusbandName}
+                    onChange={(e) => handleInputChange('fatherHusbandName', e.target.value)}
+                    placeholder="Son/Wife/Daughter of"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Heart className="icon" />
+                    <b>Blood Group:</b>
+                  </label>
+                </td>
+                <td>
+                  <select
+                    className="form-input"
+                    value={formData.bloodGroup}
+                    onChange={(e) => handleInputChange('bloodGroup', e.target.value)}
+                  >
+                    <option value="">Select Blood Group</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Shield className="icon" />
+                    <b>Nationality:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={formData.nationality}
+                    onChange={(e) => handleInputChange('nationality', e.target.value)}
+                    placeholder="Enter Nationality"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <MapPin className="icon" />
+                    <b>Permanent Address:</b>
+                  </label>
+                </td>
+                <td>
+                  <textarea
+                    className="form-input"
+                    rows={3}
+                    value={formData.permanentAddress}
+                    onChange={(e) => handleInputChange('permanentAddress', e.target.value)}
+                    placeholder="Enter Permanent Address"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <MapPin className="icon" />
+                    <b>Temporary Address:</b>
+                  </label>
+                </td>
+                <td>
+                  <textarea
+                    className="form-input"
+                    rows={3}
+                    value={formData.temporaryAddress}
+                    onChange={(e) => handleInputChange('temporaryAddress', e.target.value)}
+                    placeholder="Enter Temporary Address"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Car className="icon" />
+                    <b>COV:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={formData.cov}
+                    onChange={(e) => handleInputChange('cov', e.target.value)}
+                    placeholder="Class of Vehicle"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Calendar className="icon" />
+                    <b>Issue Date:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={formData.issueDate}
+                    onChange={(e) => handleInputChange('issueDate', e.target.value)}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <User className="icon" />
+                    <b>Gender:</b>
+                  </label>
+                </td>
+                <td>
+                  <select
+                    className="form-input"
+                    value={formData.gender}
+                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Heart className="icon" />
+                    <b>Organ Donor:</b>
+                  </label>
+                </td>
+                <td>
+                  <select
+                    className="form-input"
+                    value={formData.organDonor}
+                    onChange={(e) => handleInputChange('organDonor', e.target.value)}
+                  >
+                    <option value="">Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Shield className="icon" />
+                    <b>Badge No:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={formData.badgeNo}
+                    onChange={(e) => handleInputChange('badgeNo', e.target.value)}
+                    placeholder="Enter Badge Number"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Calendar className="icon" />
+                    <b>Badge Issue Date:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={formData.badgeIssueDate}
+                    onChange={(e) => handleInputChange('badgeIssueDate', e.target.value)}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Calendar className="icon" />
+                    <b>NT Validity:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={formData.ntValidity}
+                    onChange={(e) => handleInputChange('ntValidity', e.target.value)}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Calendar className="icon" />
+                    <b>TR Validity:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={formData.trValidity}
+                    onChange={(e) => handleInputChange('trValidity', e.target.value)}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Shield className="icon" />
+                    <b>Last Endorse Auth:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={formData.lastEndorseAuth}
+                    onChange={(e) => handleInputChange('lastEndorseAuth', e.target.value)}
+                    placeholder="Enter Last Endorse Authority"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label className="field-label">
+                    <Phone className="icon" />
+                    <b>Mobile Number:</b>
+                  </label>
+                </td>
+                <td>
+                  <input
+                    type="tel"
+                    className="form-input"
+                    value={formData.mobileNumber}
+                    onChange={(e) => handleInputChange('mobileNumber', e.target.value)}
+                    placeholder="Enter Mobile Number"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="button-group no-print">
+          <button onClick={handlePreview} className="btn btn-primary">
+            <FileText className="btn-icon" />
+            Preview
+          </button>
+          <button onClick={handlePrint} className="btn btn-secondary">
+            <Printer className="btn-icon" />
+            Print
+          </button>
+          <button onClick={handleExportPDF} className="btn btn-success">
+            <Download className="btn-icon" />
+            Export PDF
+          </button>
+          <button onClick={handleExportCSV} className="btn btn-warning">
+            <FileText className="btn-icon" />
+            Export CSV
+          </button>
+          <button onClick={clearForm} className="btn btn-danger">
+            Clear Form
+          </button>
+        </div>
+      </div>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="preview-modal-overlay">
+          <div className="preview-modal">
+            <div className="preview-header">
+              <h2>DL Details Preview</h2>
+              <button onClick={closePreview} className="close-btn">&times;</button>
+            </div>
+            
+            <div className="preview-content">
+              <div className="preview-document">
+                {/* Header */}
+                <div className="preview-header-section">
+                  <div className="preview-title">DRIVING LICENSE</div>
+                  <div className="preview-subtitle">Please check response is coming from</div>
+                  <div className="preview-source">https://sarathi.parivahan.gov.in/...</div>
+                </div>
+
+                {/* Photo and Signature */}
+                <div className="preview-images">
+                  <div className="preview-photo">
+                    {formData.candidateImage ? (
+                      <img 
+                        src={formData.candidateImage} 
+                        alt="Candidate" 
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="preview-placeholder" style={{ display: formData.candidateImage ? 'none' : 'flex' }}>
+                      Photo
+                    </div>
+                  </div>
+                  <div className="preview-signature">
+                    {formData.candidateSignature ? (
+                      <img 
+                        src={formData.candidateSignature} 
+                        alt="Signature" 
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="preview-placeholder" style={{ display: formData.candidateSignature ? 'none' : 'flex' }}>
+                      Signature
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form Data */}
+                <div className="preview-form-data">
+                  <div className="preview-row">
+                    <div className="preview-label">DL No.:</div>
+                    <div className="preview-value">{formData.dlNumber || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">D.O.B:</div>
+                    <div className="preview-value">{formData.dob || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Name:</div>
+                    <div className="preview-value">{formData.name || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">S/W/D:</div>
+                    <div className="preview-value">{formData.fatherHusbandName || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Blood Group:</div>
+                    <div className="preview-value">{formData.bloodGroup || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Nationality:</div>
+                    <div className="preview-value">{formData.nationality || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Permanent Address:</div>
+                    <div className="preview-value">{formData.permanentAddress || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Temporary Address:</div>
+                    <div className="preview-value">{formData.temporaryAddress || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">COV:</div>
+                    <div className="preview-value">{formData.cov || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Issue Date:</div>
+                    <div className="preview-value">{formData.issueDate || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Gender:</div>
+                    <div className="preview-value">{formData.gender || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Organ Donor:</div>
+                    <div className="preview-value">{formData.organDonor || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Badge No:</div>
+                    <div className="preview-value">{formData.badgeNo || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Badge Issue Date:</div>
+                    <div className="preview-value">{formData.badgeIssueDate || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">NT Validity:</div>
+                    <div className="preview-value">{formData.ntValidity || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">TR Validity:</div>
+                    <div className="preview-value">{formData.trValidity || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Last Endorse Auth:</div>
+                    <div className="preview-value">{formData.lastEndorseAuth || 'Not provided'}</div>
+                  </div>
+                  <div className="preview-row">
+                    <div className="preview-label">Mobile Number:</div>
+                    <div className="preview-value">{formData.mobileNumber || 'Not provided'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="preview-actions">
+              <button onClick={handlePrintFromPreview} className="btn btn-primary">
+                <Printer className="btn-icon" />
+                Print
+              </button>
+              <button onClick={handleExportPDFFromPreview} className="btn btn-success">
+                <Download className="btn-icon" />
+                Export PDF
+              </button>
+              <button onClick={closePreview} className="btn btn-secondary">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
