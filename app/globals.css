@@ -641,31 +641,36 @@ a {
 
 .preview-images-section {
   display: flex;
-  gap: 2rem;
+  gap: 3rem;
   margin-bottom: 1.5rem;
-  padding: 1rem;
+  padding: 1.5rem;
   border: 1px solid #d1d5db;
   border-radius: 4px;
   background: #f9fafb;
+  align-items: flex-start;
 }
 
 .preview-image-container,
 .preview-signature-container {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .preview-image-label,
 .preview-signature-label {
   font-weight: 600;
   color: #374151;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   font-size: 0.875rem;
+  text-align: center;
 }
 
 .preview-photo,
 .preview-signature {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border: 2px solid #d1d5db;
   border-radius: 4px;
   background: white;

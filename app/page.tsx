@@ -572,7 +572,7 @@ export default function DLDetailsPage() {
 
   const handlePrintFromPreview = () => {
     // Print the preview content directly
-    const previewContent = document.querySelector('.preview-content')
+    const previewContent = document.querySelector('.preview-document')
     if (previewContent) {
       const printWindow = window.open('', '_blank')
       if (printWindow) {
@@ -715,9 +715,13 @@ export default function DLDetailsPage() {
         printWindow.document.close()
         
         printWindow.onload = () => {
-          printWindow.focus()
-          printWindow.print()
-          printWindow.close()
+          setTimeout(() => {
+            printWindow.focus()
+            printWindow.print()
+            setTimeout(() => {
+              printWindow.close()
+            }, 1000)
+          }, 500)
         }
       } else {
         window.print()
