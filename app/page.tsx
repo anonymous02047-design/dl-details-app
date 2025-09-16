@@ -152,9 +152,9 @@ export default function DLDetailsPage() {
     const pageHeight = pdf.internal.pageSize.getHeight()
     
     // Set up colors
-    const primaryColor = [0, 51, 102] // Dark blue
-    const secondaryColor = [0, 102, 204] // Blue
-    const lightGray = [240, 240, 240]
+    const primaryColor: [number, number, number] = [0, 51, 102] // Dark blue
+    const secondaryColor: [number, number, number] = [0, 102, 204] // Blue
+    const lightGray: [number, number, number] = [240, 240, 240]
     
     // Header Section
     pdf.setFillColor(...primaryColor)
