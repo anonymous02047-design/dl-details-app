@@ -266,8 +266,15 @@ export default function DLDetailsPage() {
     // Reset text color
     pdf.setTextColor(31, 41, 55) // Gray-800
     
-    // Photo and Signature Section
+    // Photo and Signature Section with proper spacing and labels
     let yPos = 35
+    
+    // Add Candidate Image label
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'bold')
+    pdf.setTextColor(55, 65, 81) // Gray-700
+    pdf.text('Candidate Image:', 20, yPos)
+    yPos += 8
     
     // Photo section with proper async handling
     const addPhotoToPDF = () => {
@@ -276,46 +283,54 @@ export default function DLDetailsPage() {
           try {
             const img = new Image()
             img.onload = () => {
-              const imgWidth = 25
-              const imgHeight = 30
+              const imgWidth = 30
+              const imgHeight = 35
               pdf.addImage(img, 'JPEG', 20, yPos, imgWidth, imgHeight)
               resolve()
             }
             img.onerror = () => {
               // If image fails to load, draw a placeholder
               pdf.setFillColor(...lightGray)
-              pdf.rect(20, yPos, 25, 30, 'F')
+              pdf.rect(20, yPos, 30, 35, 'F')
               pdf.setDrawColor(...borderGray)
-              pdf.rect(20, yPos, 25, 30)
+              pdf.rect(20, yPos, 30, 35)
               pdf.setFontSize(8)
               pdf.setTextColor(107, 114, 128)
-              pdf.text('Photo', 32.5, yPos + 18, { align: 'center' })
+              pdf.text('Photo', 35, yPos + 20, { align: 'center' })
               resolve()
             }
             img.src = formData.candidateImage
           } catch (e) {
             // If image fails to load, draw a placeholder
             pdf.setFillColor(...lightGray)
-            pdf.rect(20, yPos, 25, 30, 'F')
+            pdf.rect(20, yPos, 30, 35, 'F')
             pdf.setDrawColor(...borderGray)
-            pdf.rect(20, yPos, 25, 30)
+            pdf.rect(20, yPos, 30, 35)
             pdf.setFontSize(8)
             pdf.setTextColor(107, 114, 128)
-            pdf.text('Photo', 32.5, yPos + 18, { align: 'center' })
+            pdf.text('Photo', 35, yPos + 20, { align: 'center' })
             resolve()
           }
         } else {
           pdf.setFillColor(...lightGray)
-          pdf.rect(20, yPos, 25, 30, 'F')
+          pdf.rect(20, yPos, 30, 35, 'F')
           pdf.setDrawColor(...borderGray)
-          pdf.rect(20, yPos, 25, 30)
+          pdf.rect(20, yPos, 30, 35)
           pdf.setFontSize(8)
           pdf.setTextColor(107, 114, 128)
-          pdf.text('Photo', 32.5, yPos + 18, { align: 'center' })
+          pdf.text('Photo', 35, yPos + 20, { align: 'center' })
           resolve()
         }
       })
     }
+    
+    // Add Candidate Signature label (positioned to the right)
+    const signatureLabelY = 35
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'bold')
+    pdf.setTextColor(55, 65, 81) // Gray-700
+    pdf.text('Candidate Signature:', pageWidth - 80, signatureLabelY)
+    const signatureY = signatureLabelY + 8
     
     // Signature section with proper async handling
     const addSignatureToPDF = () => {
@@ -324,47 +339,47 @@ export default function DLDetailsPage() {
           try {
             const img = new Image()
             img.onload = () => {
-              const imgWidth = 25
+              const imgWidth = 30
               const imgHeight = 15
-              pdf.addImage(img, 'JPEG', pageWidth - 45, yPos, imgWidth, imgHeight)
+              pdf.addImage(img, 'JPEG', pageWidth - 80, signatureY, imgWidth, imgHeight)
               resolve()
             }
             img.onerror = () => {
               pdf.setFillColor(...lightGray)
-              pdf.rect(pageWidth - 45, yPos, 25, 15, 'F')
+              pdf.rect(pageWidth - 80, signatureY, 30, 15, 'F')
               pdf.setDrawColor(...borderGray)
-              pdf.rect(pageWidth - 45, yPos, 25, 15)
+              pdf.rect(pageWidth - 80, signatureY, 30, 15)
               pdf.setFontSize(8)
               pdf.setTextColor(107, 114, 128)
-              pdf.text('Signature', pageWidth - 32.5, yPos + 9, { align: 'center' })
+              pdf.text('Signature', pageWidth - 65, signatureY + 9, { align: 'center' })
               resolve()
             }
             img.src = formData.candidateSignature
           } catch (e) {
             pdf.setFillColor(...lightGray)
-            pdf.rect(pageWidth - 45, yPos, 25, 15, 'F')
+            pdf.rect(pageWidth - 80, signatureY, 30, 15, 'F')
             pdf.setDrawColor(...borderGray)
-            pdf.rect(pageWidth - 45, yPos, 25, 15)
+            pdf.rect(pageWidth - 80, signatureY, 30, 15)
             pdf.setFontSize(8)
             pdf.setTextColor(107, 114, 128)
-            pdf.text('Signature', pageWidth - 32.5, yPos + 9, { align: 'center' })
+            pdf.text('Signature', pageWidth - 65, signatureY + 9, { align: 'center' })
             resolve()
           }
         } else {
           pdf.setFillColor(...lightGray)
-          pdf.rect(pageWidth - 45, yPos, 25, 15, 'F')
+          pdf.rect(pageWidth - 80, signatureY, 30, 15, 'F')
           pdf.setDrawColor(...borderGray)
-          pdf.rect(pageWidth - 45, yPos, 25, 15)
+          pdf.rect(pageWidth - 80, signatureY, 30, 15)
           pdf.setFontSize(8)
           pdf.setTextColor(107, 114, 128)
-          pdf.text('Signature', pageWidth - 32.5, yPos + 9, { align: 'center' })
+          pdf.text('Signature', pageWidth - 65, signatureY + 9, { align: 'center' })
           resolve()
         }
       })
     }
     
-    // Main content area
-    yPos = 75
+    // Main content area - positioned below the images
+    yPos = 85
     
     // Create a professional table structure
     const fields = [
