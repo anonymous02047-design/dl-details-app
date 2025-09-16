@@ -1,14 +1,17 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production'
+const repositoryName = 'dl-details-app'
+
 const nextConfig = {
-  images: {
-    domains: ['localhost'],
-    unoptimized: true
-  },
   output: 'export',
   trailingSlash: true,
   distDir: 'dist',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/dl-details-app' : '',
-  basePath: process.env.NODE_ENV === 'production' ? '/dl-details-app' : ''
+  assetPrefix: isProd ? `/${repositoryName}/` : '',
+  basePath: isProd ? `/${repositoryName}` : '',
+  images: {
+    domains: ['localhost'],
+    unoptimized: true
+  }
 }
 
 module.exports = nextConfig
