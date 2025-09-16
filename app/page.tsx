@@ -583,14 +583,29 @@ export default function DLDetailsPage() {
                     onChange={(e) => handleInputChange('bloodGroup', e.target.value)}
                   >
                     <option value="">Select Blood Group</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
+                    <option value="A+">A+ (A Positive)</option>
+                    <option value="A-">A- (A Negative)</option>
+                    <option value="B+">B+ (B Positive)</option>
+                    <option value="B-">B- (B Negative)</option>
+                    <option value="AB+">AB+ (AB Positive)</option>
+                    <option value="AB-">AB- (AB Negative)</option>
+                    <option value="O+">O+ (O Positive)</option>
+                    <option value="O-">O- (O Negative)</option>
+                    <option value="A1+">A1+ (A1 Positive)</option>
+                    <option value="A1-">A1- (A1 Negative)</option>
+                    <option value="A2+">A2+ (A2 Positive)</option>
+                    <option value="A2-">A2- (A2 Negative)</option>
+                    <option value="B1+">B1+ (B1 Positive)</option>
+                    <option value="B1-">B1- (B1 Negative)</option>
+                    <option value="B2+">B2+ (B2 Positive)</option>
+                    <option value="B2-">B2- (B2 Negative)</option>
+                    <option value="A1B+">A1B+ (A1B Positive)</option>
+                    <option value="A1B-">A1B- (A1B Negative)</option>
+                    <option value="A2B+">A2B+ (A2B Positive)</option>
+                    <option value="A2B-">A2B- (A2B Negative)</option>
+                    <option value="Bombay">Bombay (Oh)</option>
+                    <option value="Rh-null">Rh-null (Golden Blood)</option>
+                    <option value="Unknown">Unknown</option>
                   </select>
                 </td>
               </tr>

@@ -6,7 +6,9 @@ const nextConfig = {
   },
   output: 'export',
   trailingSlash: true,
-  distDir: 'dist'
+  distDir: 'dist',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/dl-details-app' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/dl-details-app' : ''
 }
 
 module.exports = nextConfig
