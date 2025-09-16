@@ -244,163 +244,196 @@ export default function DLDetailsPage() {
     const pageHeight = pdf.internal.pageSize.getHeight()
     
     // Set up colors
-    const primaryColor: [number, number, number] = [0, 51, 102] // Dark blue
-    const secondaryColor: [number, number, number] = [0, 102, 204] // Blue
-    const lightGray: [number, number, number] = [240, 240, 240]
+    const primaryColor: [number, number, number] = [30, 64, 175] // Blue-600
+    const lightGray: [number, number, number] = [248, 250, 252] // Gray-50
+    const borderGray: [number, number, number] = [209, 213, 219] // Gray-300
     
-    // Header Section
+    // Header Section with proper styling
     pdf.setFillColor(...primaryColor)
     pdf.rect(0, 0, pageWidth, 25, 'F')
     
     pdf.setTextColor(255, 255, 255)
-    pdf.setFontSize(20)
+    pdf.setFontSize(18)
     pdf.setFont('helvetica', 'bold')
-    pdf.text('DRIVING LICENSE', pageWidth / 2, 15, { align: 'center' })
+    pdf.text('DL Details', pageWidth / 2, 12, { align: 'center' })
     
     // Subtitle
     pdf.setFontSize(10)
     pdf.setFont('helvetica', 'normal')
-    pdf.text('Please check response is coming from', pageWidth / 2, 22, { align: 'center' })
-    pdf.text('https://sarathi.parivahan.gov.in/...', pageWidth / 2, 26, { align: 'center' })
+    pdf.text('Please check response is coming from', pageWidth / 2, 16, { align: 'center' })
+    pdf.text('https://sarathi.parivahan.gov.in/...', pageWidth / 2, 19, { align: 'center' })
     
     // Reset text color
-    pdf.setTextColor(0, 0, 0)
+    pdf.setTextColor(31, 41, 55) // Gray-800
     
     // Photo and Signature Section
-    let yPos = 40
+    let yPos = 35
     
-    // Photo section
-    if (formData.candidateImage) {
-      try {
-        const img = new Image()
-        img.onload = () => {
-          const imgWidth = 30
-          const imgHeight = 35
-          pdf.addImage(img, 'JPEG', 20, yPos, imgWidth, imgHeight)
+    // Photo section with proper async handling
+    const addPhotoToPDF = () => {
+      return new Promise<void>((resolve) => {
+        if (formData.candidateImage) {
+          try {
+            const img = new Image()
+            img.onload = () => {
+              const imgWidth = 25
+              const imgHeight = 30
+              pdf.addImage(img, 'JPEG', 20, yPos, imgWidth, imgHeight)
+              resolve()
+            }
+            img.onerror = () => {
+              // If image fails to load, draw a placeholder
+              pdf.setFillColor(...lightGray)
+              pdf.rect(20, yPos, 25, 30, 'F')
+              pdf.setDrawColor(...borderGray)
+              pdf.rect(20, yPos, 25, 30)
+              pdf.setFontSize(8)
+              pdf.setTextColor(107, 114, 128)
+              pdf.text('Photo', 32.5, yPos + 18, { align: 'center' })
+              resolve()
+            }
+            img.src = formData.candidateImage
+          } catch (e) {
+            // If image fails to load, draw a placeholder
+            pdf.setFillColor(...lightGray)
+            pdf.rect(20, yPos, 25, 30, 'F')
+            pdf.setDrawColor(...borderGray)
+            pdf.rect(20, yPos, 25, 30)
+            pdf.setFontSize(8)
+            pdf.setTextColor(107, 114, 128)
+            pdf.text('Photo', 32.5, yPos + 18, { align: 'center' })
+            resolve()
+          }
+        } else {
+          pdf.setFillColor(...lightGray)
+          pdf.rect(20, yPos, 25, 30, 'F')
+          pdf.setDrawColor(...borderGray)
+          pdf.rect(20, yPos, 25, 30)
+          pdf.setFontSize(8)
+          pdf.setTextColor(107, 114, 128)
+          pdf.text('Photo', 32.5, yPos + 18, { align: 'center' })
+          resolve()
         }
-        img.src = formData.candidateImage
-      } catch (e) {
-        // If image fails to load, draw a placeholder
-        pdf.setFillColor(...lightGray)
-        pdf.rect(20, yPos, 30, 35, 'F')
-        pdf.setFontSize(8)
-        pdf.text('Photo', 35, yPos + 20, { align: 'center' })
-      }
-    } else {
-      pdf.setFillColor(...lightGray)
-      pdf.rect(20, yPos, 30, 35, 'F')
-      pdf.setFontSize(8)
-      pdf.text('Photo', 35, yPos + 20, { align: 'center' })
+      })
     }
     
-    // Signature section
-    if (formData.candidateSignature) {
-      try {
-        const img = new Image()
-        img.onload = () => {
-          const imgWidth = 30
-          const imgHeight = 15
-          pdf.addImage(img, 'JPEG', pageWidth - 50, yPos, imgWidth, imgHeight)
+    // Signature section with proper async handling
+    const addSignatureToPDF = () => {
+      return new Promise<void>((resolve) => {
+        if (formData.candidateSignature) {
+          try {
+            const img = new Image()
+            img.onload = () => {
+              const imgWidth = 25
+              const imgHeight = 15
+              pdf.addImage(img, 'JPEG', pageWidth - 45, yPos, imgWidth, imgHeight)
+              resolve()
+            }
+            img.onerror = () => {
+              pdf.setFillColor(...lightGray)
+              pdf.rect(pageWidth - 45, yPos, 25, 15, 'F')
+              pdf.setDrawColor(...borderGray)
+              pdf.rect(pageWidth - 45, yPos, 25, 15)
+              pdf.setFontSize(8)
+              pdf.setTextColor(107, 114, 128)
+              pdf.text('Signature', pageWidth - 32.5, yPos + 9, { align: 'center' })
+              resolve()
+            }
+            img.src = formData.candidateSignature
+          } catch (e) {
+            pdf.setFillColor(...lightGray)
+            pdf.rect(pageWidth - 45, yPos, 25, 15, 'F')
+            pdf.setDrawColor(...borderGray)
+            pdf.rect(pageWidth - 45, yPos, 25, 15)
+            pdf.setFontSize(8)
+            pdf.setTextColor(107, 114, 128)
+            pdf.text('Signature', pageWidth - 32.5, yPos + 9, { align: 'center' })
+            resolve()
+          }
+        } else {
+          pdf.setFillColor(...lightGray)
+          pdf.rect(pageWidth - 45, yPos, 25, 15, 'F')
+          pdf.setDrawColor(...borderGray)
+          pdf.rect(pageWidth - 45, yPos, 25, 15)
+          pdf.setFontSize(8)
+          pdf.setTextColor(107, 114, 128)
+          pdf.text('Signature', pageWidth - 32.5, yPos + 9, { align: 'center' })
+          resolve()
         }
-        img.src = formData.candidateSignature
-      } catch (e) {
-        pdf.setFillColor(...lightGray)
-        pdf.rect(pageWidth - 50, yPos, 30, 15, 'F')
-        pdf.setFontSize(8)
-        pdf.text('Signature', pageWidth - 35, yPos + 8, { align: 'center' })
-      }
-    } else {
-      pdf.setFillColor(...lightGray)
-      pdf.rect(pageWidth - 50, yPos, 30, 15, 'F')
-      pdf.setFontSize(8)
-      pdf.text('Signature', pageWidth - 35, yPos + 8, { align: 'center' })
+      })
     }
     
     // Main content area
-    yPos = 85
+    yPos = 75
     
-    // Create a table-like structure
+    // Create a professional table structure
     const fields = [
-      { label: 'DL No.', value: formData.dlNumber, width: 0.5 },
-      { label: 'D.O.B', value: formData.dob, width: 0.5 },
-      { label: 'Name', value: formData.name, width: 1 },
-      { label: 'S/W/D', value: formData.fatherHusbandName, width: 1 },
-      { label: 'Blood Group', value: formData.bloodGroup, width: 0.3 },
-      { label: 'Nationality', value: formData.nationality, width: 0.7 },
-      { label: 'Permanent Address', value: formData.permanentAddress, width: 1 },
-      { label: 'Temporary Address', value: formData.temporaryAddress, width: 1 },
-      { label: 'COV', value: formData.cov, width: 0.5 },
-      { label: 'Issue Date', value: formData.issueDate, width: 0.5 },
-      { label: 'Gender', value: formData.gender, width: 0.3 },
-      { label: 'Organ Donor', value: formData.organDonor, width: 0.7 },
-      { label: 'Badge No', value: formData.badgeNo, width: 0.5 },
-      { label: 'Badge Issue Date', value: formData.badgeIssueDate, width: 0.5 },
-      { label: 'NT Validity', value: formData.ntValidity, width: 0.5 },
-      { label: 'TR Validity', value: formData.trValidity, width: 0.5 },
-      { label: 'Last Endorse Auth', value: formData.lastEndorseAuth, width: 1 },
-      { label: 'Mobile Number', value: formData.mobileNumber, width: 0.5 }
+      { label: 'DL No.', value: formData.dlNumber },
+      { label: 'D.O.B', value: formData.dob },
+      { label: 'Name', value: formData.name },
+      { label: 'S/W/D', value: formData.fatherHusbandName },
+      { label: 'Blood Group', value: formData.bloodGroup },
+      { label: 'Nationality', value: formData.nationality },
+      { label: 'Permanent Address', value: formData.permanentAddress },
+      { label: 'Temporary Address', value: formData.temporaryAddress },
+      { label: 'COV', value: formData.cov },
+      { label: 'Issue Date', value: formData.issueDate },
+      { label: 'Gender', value: formData.gender },
+      { label: 'Organ Donor', value: formData.organDonor },
+      { label: 'Badge No', value: formData.badgeNo },
+      { label: 'Badge Issue Date', value: formData.badgeIssueDate },
+      { label: 'NT Validity', value: formData.ntValidity },
+      { label: 'TR Validity', value: formData.trValidity },
+      { label: 'Last Endorse Auth', value: formData.lastEndorseAuth },
+      { label: 'Mobile Number', value: formData.mobileNumber }
     ]
     
-    // Draw table headers and content
-    pdf.setFontSize(10)
-    pdf.setFont('helvetica', 'bold')
-    
-    let currentY = yPos
-    let currentX = 20
+    // Draw fields in a professional table format
+    const labelWidth = 50
+    const valueWidth = pageWidth - 70 - labelWidth
     const rowHeight = 8
-    const colWidth = (pageWidth - 40) / 2
+    const startX = 20
     
     fields.forEach((field, index) => {
-      if (field.value) {
-        // Draw background for label
-        pdf.setFillColor(...lightGray)
-        pdf.rect(currentX, currentY, colWidth * 0.4, rowHeight, 'F')
-        
-        // Draw label
-        pdf.setTextColor(0, 0, 0)
-        pdf.setFont('helvetica', 'bold')
-        pdf.setFontSize(9)
-        pdf.text(field.label + ':', currentX + 2, currentY + 5)
-        
-        // Draw value
-        pdf.setFont('helvetica', 'normal')
-        pdf.setFontSize(9)
-        const valueX = currentX + colWidth * 0.4 + 2
-        const maxWidth = colWidth * 0.6 - 4
-        
-        // Handle long text by wrapping
-        const lines = pdf.splitTextToSize(field.value, maxWidth)
-        pdf.text(lines, valueX, currentY + 5)
-        
-        // Move to next row
-        currentY += rowHeight + 2
-        
-        // Check if we need to move to next column or new page
-        if (currentY > pageHeight - 30) {
-          if (currentX === 20) {
-            // Move to right column
-            currentX = pageWidth / 2 + 10
-            currentY = yPos
-          } else {
-            // New page
-            pdf.addPage()
-            currentX = 20
-            currentY = 30
-          }
-        }
-      }
+      const currentY = yPos + (index * rowHeight)
+      
+      // Label background
+      pdf.setFillColor(...lightGray)
+      pdf.rect(startX, currentY, labelWidth, rowHeight, 'F')
+      
+      // Label text
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'bold')
+      pdf.setTextColor(55, 65, 81) // Gray-700
+      pdf.text(field.label + ':', startX + 3, currentY + 5.5)
+      
+      // Value background
+      pdf.setFillColor(255, 255, 255)
+      pdf.rect(startX + labelWidth, currentY, valueWidth, rowHeight, 'F')
+      
+      // Value text
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'normal')
+      pdf.setTextColor(31, 41, 55) // Gray-800
+      const value = field.value || 'Not provided'
+      pdf.text(value, startX + labelWidth + 3, currentY + 5.5)
+      
+      // Border
+      pdf.setDrawColor(...borderGray)
+      pdf.rect(startX, currentY, labelWidth + valueWidth, rowHeight)
     })
     
     // Footer
     const footerY = pageHeight - 15
     pdf.setFontSize(8)
     pdf.setFont('helvetica', 'italic')
-    pdf.setTextColor(100, 100, 100)
-    pdf.text('Generated on: ' + new Date().toLocaleDateString(), 20, footerY)
-    pdf.text('DL Details Form - Automated System', pageWidth - 20, footerY, { align: 'right' })
+    pdf.setTextColor(107, 114, 128) // Gray-500
+    pdf.text('Generated on: ' + new Date().toLocaleDateString(), pageWidth / 2, footerY, { align: 'center' })
     
-    // Save the PDF
-    pdf.save('dl-details.pdf')
+    // Handle images asynchronously and then save
+    Promise.all([addPhotoToPDF(), addSignatureToPDF()]).then(() => {
+      pdf.save('dl-details.pdf')
+    })
   }
 
   const exportToCSV = () => {
