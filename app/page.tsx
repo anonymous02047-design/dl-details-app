@@ -571,10 +571,164 @@ export default function DLDetailsPage() {
   }
 
   const handlePrintFromPreview = () => {
-    setShowPreview(false)
-    setTimeout(() => {
-      handlePrint()
-    }, 100)
+    // Print the preview content directly
+    const previewContent = document.querySelector('.preview-content')
+    if (previewContent) {
+      const printWindow = window.open('', '_blank')
+      if (printWindow) {
+        const printContent = previewContent.innerHTML
+        
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>DL Details - Driving License Information</title>
+              <style>
+                @page {
+                  size: A4;
+                  margin: 0.5in;
+                }
+                * {
+                  -webkit-print-color-adjust: exact !important;
+                  color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+                  font-size: 14px;
+                  line-height: 1.4;
+                  background: white;
+                  color: #1f2937;
+                  margin: 0;
+                  padding: 0;
+                }
+                .page-container {
+                  background: white;
+                  padding: 0;
+                  margin: 0;
+                }
+                .main-container {
+                  max-width: none;
+                  margin: 0;
+                  padding: 0;
+                }
+                .header-section {
+                  text-align: center;
+                  margin-bottom: 20px;
+                  padding: 20px;
+                  background: #1e40af;
+                  color: white;
+                }
+                .main-title {
+                  font-size: 24px;
+                  font-weight: bold;
+                  color: white;
+                  margin-bottom: 8px;
+                }
+                .subtitle {
+                  font-size: 12px;
+                  color: #e5e7eb;
+                  margin-bottom: 4px;
+                }
+                .source-url {
+                  font-size: 12px;
+                  color: #93c5fd;
+                  font-weight: 600;
+                }
+                .form-container {
+                  background: white;
+                  border: 1px solid #d1d5db;
+                  margin: 0;
+                  padding: 20px;
+                }
+                .form-table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 13px;
+                }
+                .form-table td {
+                  padding: 10px;
+                  border: 1px solid #d1d5db;
+                  vertical-align: top;
+                }
+                .form-table td:first-child {
+                  background-color: #f8fafc;
+                  font-weight: 600;
+                  width: 35%;
+                  color: #374151;
+                }
+                .form-input {
+                  border: 1px solid #d1d5db;
+                  padding: 6px 8px;
+                  font-size: 12px;
+                  background: white;
+                  color: #1f2937;
+                  width: 100%;
+                  box-sizing: border-box;
+                }
+                .field-label {
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  font-weight: 600;
+                  color: #374151;
+                }
+                .icon {
+                  width: 14px;
+                  height: 14px;
+                  color: #6b7280;
+                }
+                .image-container {
+                  width: 100px;
+                  height: 100px;
+                  border: 2px solid #d1d5db;
+                  background-color: #f9fafb;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  position: relative;
+                }
+                .image-container img {
+                  max-width: 100%;
+                  max-height: 100%;
+                  object-fit: cover;
+                }
+                .upload-placeholder {
+                  text-align: center;
+                  color: #6b7280;
+                  font-size: 10px;
+                }
+                .no-print {
+                  display: none !important;
+                }
+                .button-group {
+                  display: none !important;
+                }
+              </style>
+            </head>
+            <body>
+              ${printContent}
+            </body>
+          </html>
+        `)
+        
+        printWindow.document.close()
+        
+        printWindow.onload = () => {
+          printWindow.focus()
+          printWindow.print()
+          printWindow.close()
+        }
+      } else {
+        window.print()
+      }
+    } else {
+      // Fallback to regular print
+      setShowPreview(false)
+      setTimeout(() => {
+        handlePrint()
+      }, 100)
+    }
   }
 
   const handleExportPDFFromPreview = () => {
@@ -1042,47 +1196,53 @@ export default function DLDetailsPage() {
               <div className="preview-document">
                 {/* Header */}
                 <div className="preview-header-section">
-                  <div className="preview-title">DRIVING LICENSE</div>
+                  <div className="preview-title">DL Details</div>
                   <div className="preview-subtitle">Please check response is coming from</div>
                   <div className="preview-source">https://sarathi.parivahan.gov.in/...</div>
                 </div>
 
-                {/* Photo and Signature */}
-                <div className="preview-images">
-                  <div className="preview-photo">
-                    {formData.candidateImage ? (
-                      <img 
-                        src={formData.candidateImage} 
-                        alt="Candidate" 
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                          if (nextElement) {
-                            nextElement.style.display = 'flex';
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <div className="preview-placeholder" style={{ display: formData.candidateImage ? 'none' : 'flex' }}>
-                      Photo
+                {/* Photo and Signature Section */}
+                <div className="preview-images-section">
+                  <div className="preview-image-container">
+                    <div className="preview-image-label">Candidate Image:</div>
+                    <div className="preview-photo">
+                      {formData.candidateImage ? (
+                        <img 
+                          src={formData.candidateImage} 
+                          alt="Candidate" 
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (nextElement) {
+                              nextElement.style.display = 'flex';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div className="preview-placeholder" style={{ display: formData.candidateImage ? 'none' : 'flex' }}>
+                        Photo
+                      </div>
                     </div>
                   </div>
-                  <div className="preview-signature">
-                    {formData.candidateSignature ? (
-                      <img 
-                        src={formData.candidateSignature} 
-                        alt="Signature" 
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                          if (nextElement) {
-                            nextElement.style.display = 'flex';
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <div className="preview-placeholder" style={{ display: formData.candidateSignature ? 'none' : 'flex' }}>
-                      Signature
+                  <div className="preview-signature-container">
+                    <div className="preview-signature-label">Candidate Signature:</div>
+                    <div className="preview-signature">
+                      {formData.candidateSignature ? (
+                        <img 
+                          src={formData.candidateSignature} 
+                          alt="Signature" 
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (nextElement) {
+                              nextElement.style.display = 'flex';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div className="preview-placeholder" style={{ display: formData.candidateSignature ? 'none' : 'flex' }}>
+                        Signature
+                      </div>
                     </div>
                   </div>
                 </div>
