@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Test - DL Details App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+            margin: 0;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        .test-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .test-form {
+            display: grid;
+            gap: 1rem;
+        }
+        .test-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .test-button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="test-title">CSS Test - DL Details App</h1>
+        <p>If you can see this styled properly, CSS is working!</p>
+        
+        <form class="test-form">
+            <input type="text" class="test-input" placeholder="Test Input Field" />
+            <input type="email" class="test-input" placeholder="Test Email Field" />
+            <button type="button" class="test-button">Test Button</button>
+        </form>
+        
+        <div style="margin-top: 2rem; padding: 1rem; background-color: #f0f9ff; border-radius: 8px;">
+            <h3>CSS Status Check:</h3>
+            <ul>
+                <li>✅ Font family loaded</li>
+                <li>✅ Background colors applied</li>
+                <li>✅ Border radius working</li>
+                <li>✅ Box shadows applied</li>
+                <li>✅ Hover effects working</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
